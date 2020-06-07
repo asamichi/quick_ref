@@ -18,10 +18,10 @@ url
 
 ## 動作例
 １．引用無し
-![image](./img/notselected.jpg)
+![image](./img/notselected2.jpg)
 ```
-参考:風来のシレン - Wikipedia
-https://ja.wikipedia.org/wiki/%E9%A2%A8%E6%9D%A5%E3%81%AE%E3%82%B7%E3%83%AC%E3%83%B3
+参考:ぷよぷよ - Wikipedia
+https://ja.wikipedia.org/wiki/%E3%81%B7%E3%82%88%E3%81%B7%E3%82%88
 ```
 
 ２．引用有り
