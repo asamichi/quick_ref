@@ -1,10 +1,16 @@
 // ==UserScript==
-// @name            quick reference
-// @namespace       asamichi
+// @name         quick reference
+// @namespace    asamichi
+// @version      0.2
 // @description  Ctrl+l:Copy the title and URL of this page, as well as the selected quote.
 // @include      *
 // @exclude      
+// @require     https://riversun.github.io/jsframe/jsframe.js
+// @downloadURL https://github.com/asamichi/quick_ref/raw/master/quick_ref.user.js
+// @updateURL   https://github.com/asamichi/quick_ref/raw/master/quick_ref.user.js
 // ==/UserScript==
+//お借りしたライブラリ
+//https://qiita.com/riversun/items/1adffa5674bc5123b16d
 
 (function(){
     // ここに処理を記載する
@@ -20,17 +26,37 @@
         }
         else{
             //引用有り
-            output = "参考:" + title + "\n" + url + "\n> " + selectedText; 
+            output = "参考:" + title + "\n" + url + "\n> " + selectedText + "\n"; 
         }
 
         return output;
     }
 
+    //Ctrl+Cで引用符付けるかどうかのフラグ
+    var flag = 0;
+    //Copyする文を保持。Clipbord毎度loadしてもいいけど、別のやつコピーするの挟んだりするとこっちのがいいかなって
+    var ref = "";
+    //トーストメニュー用
+    const jsFrame = new JSFrame();
+
     document.addEventListener('keydown', (e) => {
    if (e.key === 'l' && e.ctrlKey && !e.shiftKey) {
+       if(flag == 0){
+           flag = 1;
+           jsFrame.showToast({
+            html: '引用モード<br>Ctrl+Cで引用符付きコピー' , align: 'top', duration: 2000
+        });
+       }
+       else if(flag == 1){
+           flag = 0;
+           jsFrame.showToast({
+            html: '引用モード解除' , align: 'top', duration: 2000
+        });
+        return 0;
+       }
+
     //タイトルを取得
     var title = document.title;
-
     //URLを取得
     var url = location.href;
 
@@ -41,7 +67,17 @@
     if(debug == 1){
     alert( gen(title,url,selectedText) );
     }
-    execCopy( gen(title,url,selectedText) );
+    ref = gen(title,url,selectedText)
+    execCopy(ref);
+   }
+
+   if (e.key === 'c' && e.ctrlKey && !e.shiftKey && flag == 1) {
+    jsFrame.showToast({
+        html: '引用を追加しました' , align: 'top', duration: 2000
+    });
+        //選択部分の文字列を取得
+        ref  = ref + "> " + window.getSelection().toString() + "\n";
+    execCopy(ref);
    }
  })
 
@@ -57,3 +93,4 @@
     }
 
 })();
+
