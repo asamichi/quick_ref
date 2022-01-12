@@ -1,6 +1,6 @@
 # quick ref 説明
 Webページを記事に引用する時の補助ユーザースクリプトです。  
-[Greasemonkey等にインストール（スクリプトへのリンク）](https://github.com/asamichi/quick_ref/raw/master/quick_ref.user.js)
+[Greasemonkey等にインストール（スクリプトへのリンク）](https://asamick.s3.ap-northeast-1.amazonaws.com/userscript/quick_ref.user.js)
 ## 機能
 Ctrl+l で、現在のページタイトル、URLを取得し、下記フォーマットでクリップボードにコピーします。
 ```
