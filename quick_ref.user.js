@@ -1,16 +1,17 @@
 // ==UserScript==
 // @name         quick reference
 // @namespace    asamichi
-// @version      0.2
+// @version      0.4
 // @description  Ctrl+l:Copy the title and URL of this page, as well as the selected quote.
 // @include      *
 // @exclude      
 // @require     https://riversun.github.io/jsframe/jsframe.js
-// @downloadURL https://github.com/asamichi/quick_ref/raw/master/quick_ref.user.js
-// @updateURL   https://github.com/asamichi/quick_ref/raw/master/quick_ref.user.js
+// @downloadURL https://asamick.s3.ap-northeast-1.amazonaws.com/userscript/quick_ref.user.js
+// @updateURL   https://asamick.s3.ap-northeast-1.amazonaws.com/userscript/quick_ref.user.js
 // ==/UserScript==
 //お借りしたライブラリ
 //https://qiita.com/riversun/items/1adffa5674bc5123b16d
+//keycode http://faq.creasus.net/04/0131/CharCode.html
 
 (function(){
     // ここに処理を記載する
@@ -26,7 +27,7 @@
         }
         else{
             //引用有り
-            output = "参考:" + title + "\n" + url + "\n> " + selectedText + "\n"; 
+            output = "参考:" + title + "\n" + url + "\n```\n" + selectedText + "\n```\n"; 
         }
 
         return output;
@@ -38,48 +39,60 @@
     var ref = "";
     //トーストメニュー用
     const jsFrame = new JSFrame();
+    /*
+    // copy url & selexted text to clipboard, 1-line ([無変換] & [Shift] & [Y])
+    if (keyStatus[29] && keyStatus[89] && keyStatus[16]) {
+    */
 
+    let keyStatus = {};
     document.addEventListener('keydown', (e) => {
-   if (e.key === 'l' && e.ctrlKey && !e.shiftKey) {
+    keyStatus[e.keyCode] = true;
+    //ctlr + L || 無変換 + L
+   if ( (e.key === 'l' && e.ctrlKey && !e.shiftKey) || (keyStatus[29] && keyStatus[76] && !keyStatus[16]) ) {
        if(flag == 0){
            flag = 1;
            jsFrame.showToast({
-            html: '引用モード<br>Ctrl+Cで引用符付きコピー' , align: 'top', duration: 2000
+            html: '引用モード<br>Ctrl+Cで引用符付きコピー' , align: 'center', duration: 2000
         });
        }
        else if(flag == 1){
            flag = 0;
            jsFrame.showToast({
-            html: '引用モード解除' , align: 'top', duration: 2000
+            html: '引用モード解除' , align: 'center', duration: 2000
         });
         return 0;
        }
 
-    //タイトルを取得
-    var title = document.title;
-    //URLを取得
-    var url = location.href;
+        //タイトルを取得
+        var title = document.title;
+        //URLを取得
+        var url = location.href;
 
-    //選択部分の文字列を取得
-    const selectedText = window.getSelection().toString();
+        //選択部分の文字列を取得
+        const selectedText = window.getSelection().toString();
 
-    //alert("参考:" + title + "\n" + url + "\n> " + selectedText);
-    if(debug == 1){
-    alert( gen(title,url,selectedText) );
+        //alert("参考:" + title + "\n" + url + "\n> " + selectedText);
+        if(debug == 1){
+        alert( gen(title,url,selectedText) );
+        }
+
+        ref = gen(title,url,selectedText)
+        execCopy(ref);
     }
-    ref = gen(title,url,selectedText)
-    execCopy(ref);
-   }
 
    if (e.key === 'c' && e.ctrlKey && !e.shiftKey && flag == 1) {
-    jsFrame.showToast({
-        html: '引用を追加しました' , align: 'top', duration: 2000
-    });
+        jsFrame.showToast({
+            html: '引用を追加しました' , align: 'center', duration: 2000
+        });
         //選択部分の文字列を取得
-        ref  = ref + "> " + window.getSelection().toString() + "\n";
-    execCopy(ref);
+        ref  = ref + "```\n" + window.getSelection().toString() + "\n```\n";
+        execCopy(ref);
    }
  })
+
+ document.addEventListener("keyup", (event) => {
+    keyStatus[event.keyCode] = false
+  })
 
     //クリップボードにコピーする。過去遺産の使いまわし
     function execCopy(string) {
